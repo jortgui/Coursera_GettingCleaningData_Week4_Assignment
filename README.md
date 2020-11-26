@@ -14,19 +14,19 @@ The purpose of the files in this repository is to obtain a tidy data set using a
 
 This repository has the following files:
 
-* <span style="color: blue;">run_analysis.R</span> is the R script that generates the tidy data set from the raw data.
-* README.md with an introduction and an explanation step by step of what <span style="color: blue;">run_analysis.R</span> does.
-* CodeBook.md with an explanation of the final variables in the tidy data set.
+* **>run_analysis.R** is the R script that generates the tidy data set from the raw data.
+* **README.md** with an introduction and an explanation step by step of what **run_analysis.R** does.
+* **CodeBook.md** with an explanation of the final variables in the tidy data set.
 
 ## Scripts
-This project has only one script called <span style="color: blue;">run_analysis.R</span>. This script does all the operations to
+This project has only one script called **run_analysis.R**. This script does all the operations to
 convert the raw data to tidy data.
 
 ## Raw Data
 
 Raw data is obtained from *getdata_projectfile_UCI HAR Dataset.zip*. This file should be unzipped 
 inside a *data* folder in the working directory. A total of 8 raw data files are loaded into R 
-and stored with names starting with <span style="color: blue;">r.</span> meaning raw data.
+and stored with names starting with **r.** meaning raw data.
 
 * */data/UCI HAR Dataset/activity_labels.txt* stored as <span style="color: blue;">r.activity</span> 
 * */data/UCI HAR Dataset/features.txt* stored as <span style="color: blue;">r.features</span>   
