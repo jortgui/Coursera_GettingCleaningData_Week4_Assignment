@@ -12,13 +12,22 @@ The purpose of the files in this repository is to obtain a tidy data set using a
 *Recognition on Smartphones using a Multiclass Hardware-Friendly Support Vector Machine. International*
 *Workshop of Ambient Assisted Living (IWAAL 2012). Vitoria-Gasteiz, Spain. Dec 2012*
 
+More information on: http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones
+
+The tidy data set is constructed following the requirements of the week 4 assignment of the Coursera course
+*Getting and Cleaning Data*. I want to acknowledge the valuable information to complete this assignment
+found in:
+
+* https://thoughtfulbloke.wordpress.com/2015/09/09/getting-and-cleaning-the-assignment/
+* Help guide published by Luis A Sandino in the week 4 discussion forum of the course
+
 This repository has the following files:
 
-* **>run_analysis.R** is the R script that generates the tidy data set from the raw data.
+* **run_analysis.R** is the R script that generates the tidy data set from the raw data.
 * **README.md** with an introduction and an explanation step by step of what **run_analysis.R** does.
-* **CodeBook.md** with an explanation of the final variables in the tidy data set.
+* **CodeBook.md** with an explanation of the variables in the final tidy data set.
 
-## Scripts
+## R scripts
 This project has only one script called **run_analysis.R**. This script does all the operations to
 convert the raw data to tidy data.
 
@@ -26,63 +35,63 @@ convert the raw data to tidy data.
 
 Raw data is obtained from *getdata_projectfile_UCI HAR Dataset.zip*. This file should be unzipped 
 inside a *data* folder in the working directory. A total of 8 raw data files are loaded into R 
-and stored with names starting with **r.** meaning raw data.
+and stored with names starting with **r.** (meaning raw data).
 
-* */data/UCI HAR Dataset/activity_labels.txt* stored as <span style="color: blue;">r.activity</span> 
-* */data/UCI HAR Dataset/features.txt* stored as <span style="color: blue;">r.features</span>   
-* */data/UCI HAR Dataset/train/X_train.txt* stored as <span style="color: blue;">r.train</span> 
-* */data/UCI HAR Dataset/train/y_train.txt* stored as <span style="color: blue;">r.train.activity</span>  
-* */data/UCI HAR Dataset/train/subject_train.txt* stored as <span style="color: blue;">r.train.subject</span>  
-* */data/UCI HAR Dataset/test/X_test.txt* stored as <span style="color: blue;">r.test</span>  
-* */data/UCI HAR Dataset/test/y_test.txt* stored as <span style="color: blue;">r.test.activity</span>  
-* */data/UCI HAR Dataset/test/subject_test.txt* stored as <span style="color: blue;">r.test.subject</span>   
+* */data/UCI HAR Dataset/activity_labels.txt* stored as **r.activity**
+* */data/UCI HAR Dataset/features.txt* stored as **r.features**
+* */data/UCI HAR Dataset/train/X_train.txt* stored as **r.train**
+* */data/UCI HAR Dataset/train/y_train.txt* stored as **r.train.activity**  
+* */data/UCI HAR Dataset/train/subject_train.txt* stored as **r.train.subject**
+* */data/UCI HAR Dataset/test/X_test.txt* stored as **r.test**
+* */data/UCI HAR Dataset/test/y_test.txt* stored as **r.test.activity**
+* */data/UCI HAR Dataset/test/subject_test.txt* stored as **r.test.subject**
 
 ## Data Cleaning
-<span style="color: blue;">run_analysis.R</span> loads all the previous files as <span style="color: blue;">data.frame</span>
-and performs several operations to obtain one tidy table. The operations are described in the same order they are coded
-in <span style="color: blue;">run_analysis.R</span>. The order for the two first steps is different with respect
-the course assignment.
+**run_analysis.R** loads all the previous files as data.frame and performs several operations to obtain one
+tidy table. The specifications in the course assignment to clean the data are the following:
+
+1. Merges the training and the test sets to create one data set.
+2. Extracts only the measurements on the mean and standard deviation for each measurement.
+3. Uses descriptive activity names to name the activities in the data set
+4. Appropriately labels the data set with descriptive variable names.
+5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable
+for each activity and each subject.
+
+The following sections explains each of the steps implemented in **run_analysis.R** to clean the data and obtain
+the tidy data set. The order of the steps in the script with respect to the assignment specifications are the same,
+except for the two first steps, because I considered it would be better to get first the mean and std columns
+before to join all the tables.
 
 #### 1. Get Only mean() and std()
-From <span style="color: blue;">r.train</span> and <span style="color: blue;">r.test</span> get only those columns with
+From **r.train** and **r.test** get only those columns with
 mean and standard deviations values. In this script the selected columns are those in which the column name contains
-**-mean()** or **-std()**. The column names are obtained from <span style="color: blue;">r.features</span>, and the
-selected column index with **-mean()** or **-std()** are stored in <span style="color: blue;">i.feat</span>. A total
-of 66 columns with **-mean()** or **-std()** are selected. After this step <span style="color: blue;">r.train</span>
-and <span style="color: blue;">r.test</span> will contain only those 66 columns. For both <span style="color: blue;">r.train</span>
-and <span style="color: blue;">r.test</span> those 66 column names are renamed using the correspoding name from
-<span style="color: blue;">r.features</span>.
+**-mean()** or **-std()**. The column names are obtained from **r.features**, and the
+selected column index with **-mean()** or **-std()** are stored in **i.feat**. A total
+of 66 columns with **-mean()** or **-std()** are selected. After this step **r.train**
+and **r.test** will contain only those 66 columns. Column names for both tables are renamed using the correspoding
+names of the 66 columns from **r.features**.
 
 #### 2. Join all Data
-All data is joined into a single data frame named <span style="color: blue;">r.all</span> as follows:
+All data is joined into a single data frame named **r.all** as follows:
 
-* Column bind of: <span style="color: blue;">r.train.subject</span>,
-                  <span style="color: blue;">r.train.activity</span>,
-                  <span style="color: blue;">r.train</span> in this order and stored in
-                  <span style="color: blue;">r.train</span>
-* Column bind of: <span style="color: blue;">r.test.subject</span>,
-                  <span style="color: blue;">r.test.activity</span>,
-                  <span style="color: blue;">r.test</span> in this order and stored in
-                  <span style="color: blue;">r.test</span>                  
-* Row bind of: <span style="color: blue;">r.train</span>,
-               <span style="color: blue;">r.test</span> in this order and stored in
-               <span style="color: blue;">r.all</span>
+* Column bind of: **r.train.subject**, **r.train.activity**, **r.train** in this order and stored in **r.train**
+* Column bind of: **r.test.subject**, **r.test.activity**, **r.test** in this order and stored in **r.test** 
+* Row bind of: **r.train**, **r.test** in this order and stored in **r.all**
 
-The resulting table <span style="color: blue;">r.all</span> has 68 columns and 10299 rows. 
+The resulting table **r.all** has 68 columns and 10299 rows. 
 
 #### 3. Use descriptive activity names
-The 2nd column in <span style="color: blue;">r.all</span> has the activities from <span style="color: blue;">r.train.activity</span>
-and <span style="color: blue;">r.test.activity</span> encoded as integers from 1 to 6. <span style="color: blue;">r.activity</span>
+The 2nd column in **r.all** has the activities encoded as integers from 1 to 6. **r.activity**
 has the corresponding activity labels to each integer. Each integer activity value in
-<span style="color: blue;">r.all</span> is replaced by the corresponding label but formatted as following:
+**r.all** is replaced by the corresponding label but formatted as follows:
 
 * Replace "_" by "."
 * To lowercase
 
-Examples of the resulting activity labels in <span style="color: blue;">r.all</span>: walking, walking.upstairs...
+Examples of the resulting activity labels in **r.all**: walking, walking.upstairs...
 
 #### 4. Set descriptive variable names
-In this step all variables (colum names) in <span style="color: blue;">r.all</span> are formatted to descriptive names.
+In this step all variables (colum names) in **r.all** are formatted to descriptive names.
 First two columns are renamed as:
 
 * subject (first column)
@@ -91,12 +100,14 @@ First two columns are renamed as:
 The name for the rest of the columns (3 to 68) comes from step 1 (Get Only mean and std). Those columns are formatted as follows:
 
 * Remove "(" and ")"
-* Replace initial lowercase t by <span style="color: blue;">time.</span>
-* Replace initial lowercase f by <span style="color: blue;">freq.</span> (frequency)
+* Replace initial lowercase t by *time.*
+* Replace initial lowercase f by *freq.* (frequency)
 * Replace "-" by "."
 * Replace final uppercase ".X" to lowercase ".x"
 * Replace final uppercase ".Y" to lowercase ".y"
 * Replace final uppercase ".Z" to lowercase ".z"
+* Replace ".BodyBody" by ".Body"
+* Replace ".Gravity" by ".Grav"
 
 As a result, columns 3 to 68 will have the following name format:
 
@@ -107,17 +118,27 @@ As a result, columns 3 to 68 will have the following name format:
 * ... additionally, any of the previous could end with ".x", ".y" or ".z"
 
 **MD** is the main magnitude descriptor. It is composed of different
-components the script allow uppercase to differentiate between the
+components and the script allow uppercase to differentiate between the
 several components. e.g.
 
 * **MD** = "BodyAcc" (Body + Acc)
 * **MD** = "BodyAccJerk" (Body + Acc + Jerk)
 
+Acc, Gyro, Mag... are not replaced by the complete word to avoid too long names,
+in order to apply the same rule, ".Gravity" is replaced by ".Grav". "Body" is 
+not replaced because is already short.
+
 #### 5. Create an independent tidy data set
-<span style="color: blue;">r.all</span> has several rows for the same subject and activity. This step
-creates a new indpendent table stored in <span style="color: blue;">t.all</span> with mean values for
-those rows with the same subject and activity. To do that the script used
-<span style="color: green;">group_by</span> from <span style="color: green;">dplyr</span> to gropy by
-subject and activity, the output is piped to <span style="color: green;">summarize_all</span> to obtain
-the mean of all values grouped by subject and activity. <span style="color: blue;">t.all</span>
-has 68 columns and 180 rows.
+**r.all** has several rows for the same subject and activity. This step
+creates a new indpendent table stored in **t.all** with mean values for
+those rows with the same subject and activity. To do that the script uses
+**group_by* from **dplyr** to gropy by subject and activity, the output is piped
+to **summarize_all** to obtain the mean of all values grouped by subject and activity.
+**t.all** is the final tidy data set, has 68 columns and 180 rows.
+
+#### 6. Write output
+The scripts writes the final tide data set **t.all** in the working directory 
+as a text file following the specifications of the assignment, using **write.table** with
+*row.name = FALSE*. The ouput file is *tidy_data.txt* and has the columns separated by space.
+
+The text file can be loaded into R using *read.csv("tidy_data.txt", sep = "")* or *read.table("tidy_data.txt", header = TRUE)*
