@@ -7,8 +7,8 @@ output: html_document
 
 ## Introduction
 This file contains a description of the final tidy data set obtained from the script
-**run_analysis.R**. Information about the raw data and all the operations done in the 
-script in order to obtain the final data set can be found in the **README.md**.
+**run_analysis.R**. Information about the raw data and all the operations done
+in the script to obtain the final data set can be found in **README.md**.
 In this CodeBook, the description of variables is based on the original CodeBook
 *features_info.txt* from the raw data.
 
