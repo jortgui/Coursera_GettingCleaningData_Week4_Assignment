@@ -66,7 +66,7 @@ before to join all the tables.
 From **r.train** and **r.test** get only the measurements with
 mean and standard deviations values. In this script the selected measurements are those in which the name contains
 **-mean()** or **-std()**. The names are obtained from **r.features**, and the
-vector with the index with **-mean()** or **-std()** is stored in **i.feat**. A total
+vector with the index with **-mean()** or **-std()** measurements is stored in **i.feat**. A total
 of 66 measurements with **-mean()** or **-std()** are selected. After this step **r.train**
 and **r.test** will contain only those 66 measurements. Column names for both tables are renamed using the correspoding
 names of the measurements.
@@ -116,7 +116,7 @@ As a result, columns 3 to 68 will have the following name format:
 * t.**MD**.std + (.x, .y, .z)
 * f.**MD**.std + (.x, .y, .z)
 
-(.x, .y, .z) is optional, some columns will have component .x, .y or .z, others will not.
+(.x, .y, .z) is optional, some columns will have component .x, .y or .z, others will not.  
 **MD** is the measurement descriptor. It is composed of different
 components and the script allow uppercase to differentiate between the
 several components. e.g.
@@ -139,6 +139,6 @@ to **summarize_all** to obtain the mean of all values grouped by subject and act
 #### 6. Write output
 The scripts writes the final tidy data set **t.all** in the working directory 
 as a text file following the specifications of the assignment (using **write.table** with
-*row.name = FALSE*). The ouput file is *tidy_data.txt* and has the columns separated by space.
+*row.name = FALSE*). The ouput file is *tidy_data.txt*.
 
 The text file can be loaded into R using *read.csv("tidy_data.txt", sep = "")* or *read.table("tidy_data.txt", header = TRUE)*
