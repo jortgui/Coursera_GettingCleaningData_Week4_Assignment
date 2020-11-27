@@ -104,6 +104,8 @@ colnames(r.all)[1:2] <- c("subject", "activity")
 #- Replace initial lowercase t by "time."
 #- Replace initial lowercase f by "freq." (frequency)
 #- Replace "-" by "."
+#- Replace ".BodyBody" by ".Body"
+#- Replace ".Gravity" by ".Grav"
 #
 #As a result, columns 3 to 68 will have the following format:
 # time.@.mean
@@ -116,6 +118,11 @@ colnames(r.all)[1:2] <- c("subject", "activity")
 # several components. e.g.
 # @ = "BodyAcc" (Body + Acc)
 # @ = "BodyAccJerk" (Body + Acc + Jerk)
+#
+#Acc, Gyro, Mag... are not replaced by the complete word to avoid
+#too long names. Even ".Gravity" is replaced with ".Grav" to apply 
+#the same rule for all. "Body" not replaced because is already 
+#short
 
 #get the names to be formatted (columns 3 to last column)
 r.col.names <- colnames(r.all)[3:ncol(r.all)]
@@ -126,6 +133,8 @@ r.col.names <- gsub("^f","freq.",r.col.names)
 r.col.names <- gsub(".X$",".x",r.col.names)
 r.col.names <- gsub(".Y$",".y",r.col.names)
 r.col.names <- gsub(".Z$",".z",r.col.names)
+r.col.names <- gsub(".BodyBody",".Body",r.col.names)
+r.col.names <- gsub(".Gravity",".Grav",r.col.names)
 
 #set the labels to table
 colnames(r.all)[3:ncol(r.all)] <- r.col.names
@@ -138,7 +147,7 @@ colnames(r.all)[3:ncol(r.all)] <- r.col.names
 t.all <- group_by(r.all, subject, activity) %>% summarize_all(mean)
 
 
-#-- Submission ----------------------------------------------------------------
+#-- 6 (Write output) ----------------------------------------------------------
 #write output
 write.table(t.all, "tidy_data.txt", row.names = FALSE)
 
