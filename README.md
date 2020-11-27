@@ -19,13 +19,13 @@ The tidy data set is constructed following the requirements of the week 4 assign
 found in:
 
 * https://thoughtfulbloke.wordpress.com/2015/09/09/getting-and-cleaning-the-assignment/
-* Help guide published by Luis A Sandino in the week 4 discussion forum of the course
+* Help guide published by Luis A Sandino in the week 4 discussion forum of the course.
 
 This repository has the following files:
 
 * **run_analysis.R** is the R script that generates the tidy data set from the raw data.
 * **README.md** with an introduction and an explanation step by step of what **run_analysis.R** does.
-* **CodeBook.md** with an explanation of the variables in the final tidy data set.
+* **CodeBook.md** list the variables in the final tidy data set.
 
 ## R scripts
 This project has only one script called **run_analysis.R**. This script does all the operations to
@@ -52,24 +52,24 @@ tidy table. The specifications in the course assignment to clean the data are th
 
 1. Merges the training and the test sets to create one data set.
 2. Extracts only the measurements on the mean and standard deviation for each measurement.
-3. Uses descriptive activity names to name the activities in the data set
+3. Uses descriptive activity names to name the activities in the data set.
 4. Appropriately labels the data set with descriptive variable names.
 5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable
 for each activity and each subject.
 
-The following sections explains each of the steps implemented in **run_analysis.R** to clean the data and obtain
-the tidy data set. The order of the steps in the script with respect to the assignment specifications are the same,
-except for the two first steps, because I considered it would be better to get first the mean and std columns
+The following sections explains each of the steps implemented in **run_analysis.R**.
+The order of the steps in the script is the same,
+except for the two first steps, because I considered it would be better to extract first the mean and std columns
 before to join all the tables.
 
 #### 1. Get Only mean() and std()
-From **r.train** and **r.test** get only those columns with
-mean and standard deviations values. In this script the selected columns are those in which the column name contains
-**-mean()** or **-std()**. The column names are obtained from **r.features**, and the
-selected column index with **-mean()** or **-std()** are stored in **i.feat**. A total
-of 66 columns with **-mean()** or **-std()** are selected. After this step **r.train**
-and **r.test** will contain only those 66 columns. Column names for both tables are renamed using the correspoding
-names of the 66 columns from **r.features**.
+From **r.train** and **r.test** get only the measurements with
+mean and standard deviations values. In this script the selected measurements are those in which the name contains
+**-mean()** or **-std()**. The names are obtained from **r.features**, and the
+vector with the index with **-mean()** or **-std()** is stored in **i.feat**. A total
+of 66 measurements with **-mean()** or **-std()** are selected. After this step **r.train**
+and **r.test** will contain only those 66 measurements. Column names for both tables are renamed using the correspoding
+names of the measurements.
 
 #### 2. Join all Data
 All data is joined into a single data frame named **r.all** as follows:
@@ -88,7 +88,7 @@ has the corresponding activity labels to each integer. Each integer activity val
 * Replace "_" by "."
 * To lowercase
 
-Examples of the resulting activity labels in **r.all**: walking, walking.upstairs...
+Examples of the resulting activity labels in **r.all**: walking, walking.upstairs, laying...
 
 #### 4. Set descriptive variable names
 In this step all variables (colum names) in **r.all** are formatted to descriptive names.
@@ -100,8 +100,8 @@ First two columns are renamed as:
 The name for the rest of the columns (3 to 68) comes from step 1 (Get Only mean and std). Those columns are formatted as follows:
 
 * Remove "(" and ")"
-* Replace initial lowercase t by *time.*
-* Replace initial lowercase f by *freq.* (frequency)
+* Replace initial lowercase "t" by "t." (time)
+* Replace initial lowercase "f" by "f." (Fast Fourier Transform)
 * Replace "-" by "."
 * Replace final uppercase ".X" to lowercase ".x"
 * Replace final uppercase ".Y" to lowercase ".y"
@@ -111,13 +111,13 @@ The name for the rest of the columns (3 to 68) comes from step 1 (Get Only mean 
 
 As a result, columns 3 to 68 will have the following name format:
 
-* time.**MD**.mean
-* freq.**MD**.mean
-* time.**MD**.std
-* freq.**MD**.std
-* ... additionally, any of the previous could end with ".x", ".y" or ".z"
+* t.**MD**.mean + (.x, .y, .z)
+* f.**MD**.mean + (.x, .y, .z)
+* t.**MD**.std + (.x, .y, .z)
+* f.**MD**.std + (.x, .y, .z)
 
-**MD** is the main magnitude descriptor. It is composed of different
+(.x, .y, .z) is optional, some columns will have component .x, .y or .z, others will not.
+**MD** is the measurement descriptor. It is composed of different
 components and the script allow uppercase to differentiate between the
 several components. e.g.
 
@@ -131,14 +131,14 @@ not replaced because is already short.
 #### 5. Create an independent tidy data set
 **r.all** has several rows for the same subject and activity. This step
 creates a new indpendent table stored in **t.all** with mean values for
-those rows with the same subject and activity. To do that the script uses
-**group_by* from **dplyr** to gropy by subject and activity, the output is piped
+those rows with the same subject and activity. The script uses
+**group_by** from **dplyr** to gropy by subject and activity, the output is piped
 to **summarize_all** to obtain the mean of all values grouped by subject and activity.
 **t.all** is the final tidy data set, has 68 columns and 180 rows.
 
 #### 6. Write output
-The scripts writes the final tide data set **t.all** in the working directory 
-as a text file following the specifications of the assignment, using **write.table** with
-*row.name = FALSE*. The ouput file is *tidy_data.txt* and has the columns separated by space.
+The scripts writes the final tidy data set **t.all** in the working directory 
+as a text file following the specifications of the assignment (using **write.table** with
+*row.name = FALSE*). The ouput file is *tidy_data.txt* and has the columns separated by space.
 
 The text file can be loaded into R using *read.csv("tidy_data.txt", sep = "")* or *read.table("tidy_data.txt", header = TRUE)*
