@@ -1,7 +1,7 @@
 #-- SUMMARY -------------------------------------------------------------------
 
 #IMPORTANT: The zip file must be unzipped inside a "data" folder inside the working
-#directory. So inside the working directory should exists:
+#directory. So after unzip inside the working directory should exists:
 # /data/UCI HAR Dataset/...
 # /data/UCI HAR Dataset/train/...
 # /data/UCI HAR Dataset/test/...
@@ -15,6 +15,7 @@
 #- Format column names 
 #- Summarize data doing the mean by subject and activity, obtaining the final
 #  tidy table, stored in t.all
+#- Write tidy table to a text file in the working directory
 
 #Variables in this script, anything starting by... means...
 # p... = path (e.g. p.test, p.train)
@@ -22,11 +23,13 @@
 # i... = index for columns or rows (e.g. i.feat)
 # t... = tidy data (e.g. t.all)
 
+#After loading the data, the script performs 6 steps to clean the data and
+#write the final tidy data set in tidy_data.txt in the working directory.
 
 #--- LOAD DATA ----------------------------------------------------------------
 library(dplyr)
 
-#zip file is unzip inside data folder of the working directory
+#unzip the data file inside data folder of the working directory
 #Set path to root, test and train folders (as they exists after unzip data file)
 p.root <- file.path("data", "UCI HAR Dataset")
 p.test <- file.path("data", "UCI HAR Dataset", "test")
@@ -35,16 +38,16 @@ p.train <- file.path("data", "UCI HAR Dataset", "train")
 #Read tables from "train" folder
 #Raw data tables has the same name that original *.txt files
 r.train <- read.table(file.path(p.train, "X_train.txt"),
-                      colClasses = "numeric") #file reading 3 times faster if specify column classes
-r.train.subject <- read.table(file.path(p.train, "subject_train.txt"))
-r.train.activity <- read.table(file.path(p.train, "y_train.txt"))
+                      colClasses = "numeric") #measurements, file reading 3 times faster if specify column classes
+r.train.subject <- read.table(file.path(p.train, "subject_train.txt")) #subjects
+r.train.activity <- read.table(file.path(p.train, "y_train.txt"))      #activity
 
 #Read tables from "test" folder
 #Raw data tables has the same name that original *.txt files
 r.test <- read.table(file.path(p.test, "X_test.txt"),
-                     colClasses = "numeric") #file reading 3 times faster if specify column classes
-r.test.subject <- read.table(file.path(p.test, "subject_test.txt"))
-r.test.activity <- read.table(file.path(p.test, "y_test.txt"))
+                     colClasses = "numeric") #measurements, file reading 3 times faster if specify column classes
+r.test.subject <- read.table(file.path(p.test, "subject_test.txt")) #subjects
+r.test.activity <- read.table(file.path(p.test, "y_test.txt"))      #activity
 
 #Read features.txt as a table, first column = integer, second column = name of feature
 r.features <- read.table(file.path(p.root, "features.txt"),
@@ -63,7 +66,7 @@ r.activity <- read.table(file.path(p.root, "activity_labels.txt"),
 #i.feat = index with the positions with "-mean()" or "-std()"
 i.feat <- grep("\\-mean\\(\\)|\\-std\\(\\)", r.features[,2])
 
-#using index i, get from raw data only columns with "-mean()" or "-std()"
+#using index i.feat, get from raw data only columns with "-mean()" or "-std()"
 r.train <- r.train[,i.feat]
 r.test <- r.test[,i.feat]
 #set names for the selected columns
@@ -74,9 +77,9 @@ colnames(r.test) <- r.features[i.feat,2]  #set column names using raw features
 #-- 2 (STEP 1) ----------------------------------------------------------------
 #Merges the training and the test sets to create one data set
 
-r.train <- cbind(r.train.subject, r.train.activity, r.train)
-r.test <- cbind(r.test.subject, r.test.activity, r.test)
-r.all <- rbind(r.train, r.test) #r.all includes train and test sets
+r.train <- cbind(r.train.subject, r.train.activity, r.train) #join train tables
+r.test <- cbind(r.test.subject, r.test.activity, r.test)     #join test tables
+r.all <- rbind(r.train, r.test)                              #r.all includes train and test tables
 
 
 #-- 3 (STEP 3) ----------------------------------------------------------------
@@ -100,24 +103,25 @@ r.all[,2] <- r.activity[r.all[,2]]
 colnames(r.all)[1:2] <- c("subject", "activity")
 
 #For all the other columns (derived from features.txt):
-#- Remove ()
-#- Replace initial lowercase t by "time."
-#- Replace initial lowercase f by "freq." (frequency)
+#- Remove "(" and ")"
+#- Replace initial lowercase t by "t." (time)
+#- Replace initial lowercase f by "f." (Fast Fourier Transform)
 #- Replace "-" by "."
 #- Replace ".BodyBody" by ".Body"
 #- Replace ".Gravity" by ".Grav"
 #
 #As a result, columns 3 to 68 will have the following format:
-# time.@.mean
-# freq.@.mean
-# time.@.std
-# freq.@.std
+# time.MD.mean + (.x, .y, .z)
+# freq.MD.mean + (.x, .y, .z)
+# time.MD.std + (.x, .y, .z)
+# freq.MD.std + (.x, .y, .z)
+# (.x, .y, .z) optional, some will have .x, .y or .z, others will not
 # ... additionally, any of the previous could end with ".x", ".y" or ".z"
-# @ is the main magnitude descriptor. It is composed of different
+# MD is the main magnitude descriptor. It is composed of different
 # components so I allow the uppercase to differentiate between the
 # several components. e.g.
-# @ = "BodyAcc" (Body + Acc)
-# @ = "BodyAccJerk" (Body + Acc + Jerk)
+# MD = "BodyAcc" (Body + Acc)
+# MD = "BodyAccJerk" (Body + Acc + Jerk)
 #
 #Acc, Gyro, Mag... are not replaced by the complete word to avoid
 #too long names. Even ".Gravity" is replaced with ".Grav" to apply 
@@ -128,8 +132,8 @@ colnames(r.all)[1:2] <- c("subject", "activity")
 r.col.names <- colnames(r.all)[3:ncol(r.all)]
 r.col.names <- gsub("\\(|\\)","",r.col.names)
 r.col.names <- gsub("-",".",r.col.names)
-r.col.names <- gsub("^t","time.",r.col.names)
-r.col.names <- gsub("^f","freq.",r.col.names)
+r.col.names <- gsub("^t","t.",r.col.names)
+r.col.names <- gsub("^f","f.",r.col.names)
 r.col.names <- gsub(".X$",".x",r.col.names)
 r.col.names <- gsub(".Y$",".y",r.col.names)
 r.col.names <- gsub(".Z$",".z",r.col.names)
